@@ -10,7 +10,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.prashantjain.yummyrest.entity.Customer;
+import com.prashantjain.yummyrest.service.CustomerService;
+import com.prashantjain.yummyrest.util.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/customer")
@@ -26,5 +30,14 @@ public class CustomerController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody @Valid LoginRequest request) {
         return ResponseEntity.ok(customerService.login(request));
+    }
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @PostMapping("/login1")
+    public String login(@RequestParam String email, @RequestParam String password) {
+        Customer customer = customerService.validateCustomer(email, password);
+        return jwtUtil.generateToken(customer.getEmail());
     }
 }

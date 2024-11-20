@@ -11,6 +11,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+
+import com.prashantjain.yummyrest.entity.Customer;
+import com.prashantjain.yummyrest.repository.CustomerRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
@@ -34,5 +40,18 @@ public class CustomerService {
         else {
             return "Wrong password";
         }
+    }
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    public Customer validateCustomer(String email, String password) {
+        Customer customer = customerRepository.findByEmail(email);
+        if (customer != null && passwordEncoder.matches(password, customer.getPassword())) {
+            return customer;
+        }
+        throw new RuntimeException("Invalid email or password");
     }
 }
