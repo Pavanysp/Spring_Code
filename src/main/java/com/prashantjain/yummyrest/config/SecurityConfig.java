@@ -1,36 +1,29 @@
 package com.prashantjain.yummyrest.config;
 
+import com.prashantjain.yummyrest.helper.RequestInterceptor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class SecurityConfig {
+@RequiredArgsConstructor
+public class SecurityConfig  implements WebMvcConfigurer {
+    private final RequestInterceptor requestInterceptor;
 
-    HttpSecurity http;
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable()) // Disable CSRF
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll() // Allow access to authentication endpoints
-                        .anyRequest().authenticated() // Protect all other endpoints
-                );
-        return http.build();
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        // Apply the interceptor to all endpoints except /auth/login
+        registry.addInterceptor(requestInterceptor)
+                .addPathPatterns("/**")
+                .excludePathPatterns("/api/v1/auth/**", "/api/v1/customer","/api/v1/customer/login","/api/v1/product/**");
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    AuthenticationConfiguration authenticationConfiguration;
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
     }
 }

@@ -21,18 +21,18 @@ public class ProductController {
 
     private final ProductService productService;
 
-    @PostMapping("/add")
+    @PostMapping
     public ResponseEntity<String> createProduct(@RequestBody @Valid ProductRequest request) {
         return ResponseEntity.ok(productService.createProduct(request));
     }
 
 
-    @PutMapping ("/update/{id}")
+    @PutMapping ("/{id}")
     public ResponseEntity<String> updateProduct(@PathVariable Long id, @RequestBody @Valid ProductRequest request) {
         return ResponseEntity.ok(productService.updateProduct(id,request));
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Product> getProduct(@PathVariable Long id) {
         Product product = productService.getProduct(id);
         if (product != null) {
@@ -42,7 +42,7 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/get")
+    @GetMapping
     public ResponseEntity<List<Product>> getProducts() {
         List<Product> product = productService.getProducts();
         if (product != null) {
@@ -52,12 +52,12 @@ public class ProductController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
         return ResponseEntity.ok(productService.deleteProduct(id));
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping
     public ResponseEntity<String> deleteProducts() {
         return ResponseEntity.ok(productService.deleteProducts());
 
